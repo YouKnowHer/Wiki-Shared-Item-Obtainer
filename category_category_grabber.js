@@ -84,14 +84,27 @@ async function getSize(url) {
 
 async function countOccurrences(inputList) {
     const dictionary = {};
+    
+    for(var i=2016;i<=2024;i++) {
+        dictionary["Category:January "+i+" rips"] = 0;
+        dictionary["Category:February "+i+" rips"] = 0;
+        dictionary["Category:March "+i+" rips"] = 0;
+        dictionary["Category:April "+i+" rips"] = 0;
+        dictionary["Category:May "+i+" rips"] = 0;
+        dictionary["Category:June "+i+" rips"] = 0;
+        dictionary["Category:July "+i+" rips"] = 0;
+        dictionary["Category:August "+i+" rips"] = 0;
+        dictionary["Category:September "+i+" rips"] = 0;
+        dictionary["Category:October "+i+" rips"] = 0;
+        dictionary["Category:November "+i+" rips"] = 0;
+        dictionary["Category:December "+i+" rips"] = 0;
+    }
 
     var x2 = []
     //x2 = await getCategories(rip);
     for (let item of inputList) {
-        if (dictionary[item]) {
+        if (dictionary[item] >= 0) {
             dictionary[item]++;
-        } else {
-            dictionary[item] = 1;
         }
     }
 
@@ -99,8 +112,11 @@ async function countOccurrences(inputList) {
 }
 
 async function sort_object(obj) {
+
     const entries = Object.entries(obj);
-    entries.sort((a, b) => b[1] - a[1]);
+    //entries.sort((a, b) => b[1] - a[1]);
+    entries.sort((d1, d2) => new Date(d1[0]).getTime() - new Date(d2[0]).getTime());
+
     const sortedDictionary = Object.fromEntries(entries);
 
     return sortedDictionary;
@@ -114,10 +130,11 @@ async function dictionaryToString(obj) {
     for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
             resultString += `${obj[key]} - ${key.replace('‌', '')}<br>`;
+            console.log(obj[key]+"\t"+key.replace('‌', ''));
         }
     }
 
-    return resultString.trim();
+    return resultString//.trim();
 }
 
 async function main() {
@@ -168,9 +185,8 @@ async function main() {
             document.getElementById("output").innerHTML = "Storing inner categories %" + Math.floor((rips1.indexOf(item) / rips1.length) * 100) + " [" + rips1.indexOf(item) + "/" + rips1.length + "]" + "...";
             rips3 = rips3.concat(rips2);
         }
-
+        
         document.getElementById("output").innerHTML = "Inner categories fetched...";
-
 
         if (catFilter != "Category:" || catNeg != "Category:") {
             tempRips = rips3.filter((item, index) => rips3.indexOf(item) === index)
@@ -189,6 +205,7 @@ async function main() {
                 }
             }
         }
+               
         var x = await countOccurrences(rips3);
         document.getElementById("output").innerHTML = await dictionaryToString(x);
     }
